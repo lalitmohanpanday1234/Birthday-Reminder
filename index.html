@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6d5efc">
+<title>Birthday Reminder 🎂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f4fb; --card:#ffffff; --card2:#f8f9ff; --text:#171a2b; --muted:#6b7290;
+  --line:#e6e9f5; --brand:#6d5efc; --brand2:#ff5fa2; --ok:#00b894; --warn:#ff9f1c;
+  --danger:#ff5a5f; --shadow:0 10px 30px rgba(23,26,43,.08);
+  --shadow-sm:0 4px 14px rgba(23,26,43,.06); --radius:18px;
+}
+[data-theme="dark"]{
+  --bg:#0d0f1c; --card:#171a2e; --card2:#1d2138; --text:#eef0ff; --muted:#9096b4;
+  --line:#252945; --shadow:0 10px 30px rgba(0,0,0,.45); --shadow-sm:0 4px 14px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0; font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1100px 520px at 8% -8%, rgba(109,94,252,.18), transparent 62%),
+    radial-gradient(900px 480px at 108% 6%, rgba(255,95,162,.16), transparent 62%),
+    var(--bg);
+  min-height:100vh; padding-bottom:110px; transition:background .3s, color .3s; overflow-x:hidden;
+}
+button,input,select,textarea{font-family:inherit;font-size:14px;color:inherit}
+button{cursor:pointer;border:none;background:none}
+h1,h2,h3,h4{margin:0}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:40;padding:14px 16px 10px;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  background:linear-gradient(to bottom, var(--bg) 55%, transparent);
+}
+.hd-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.logo{
+  width:40px;height:40px;border-radius:13px;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));
+  display:grid;place-items:center;font-size:20px;
+  box-shadow:0 8px 20px rgba(109,94,252,.35); flex:none;
+}
+.hd-title{font-size:18px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+.hd-sub{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:2px}
+.hd-actions{margin-left:auto;display:flex;gap:8px}
+.icon-btn{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  background:var(--card);border:1px solid var(--line);font-size:16px;
+  box-shadow:var(--shadow-sm);transition:.2s;
+}
+.icon-btn:hover{transform:translateY(-1px);border-color:var(--brand)}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn.on{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-color:transparent}
+#btnLang{font-size:11.5px;font-weight:800;letter-spacing:.3px}
+
+.searchbar{
+  display:flex;align-items:center;gap:9px;background:var(--card);
+  border:1px solid var(--line);border-radius:15px;padding:11px 14px;
+  box-shadow:var(--shadow-sm);
+}
+.searchbar input{flex:1;border:none;background:none;outline:none;font-size:14px}
+.searchbar input::placeholder{color:var(--muted)}
+.searchbar .s-ico{font-size:15px;opacity:.55}
+
+main{max-width:760px;margin:0 auto;padding:0 16px}
+.view{display:none;animation:fade .28s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px 0 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;padding:8px 15px;border-radius:999px;font-size:13px;font-weight:600;
+  background:var(--card);border:1px solid var(--line);color:var(--muted);
+  transition:.18s;white-space:nowrap;
+}
+.chip:hover{border-color:var(--brand)}
+.chip.active{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-color:transparent;box-shadow:0 6px 16px rgba(109,94,252,.35)}
+
+.blist{display:flex;flex-direction:column;gap:11px;padding-top:8px}
+.bcard{
+  position:relative;display:flex;align-items:flex-start;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 14px 14px 12px;box-shadow:var(--shadow-sm);transition:.22s;overflow:hidden;
+}
+.bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c,var(--brand))}
+.bcard:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--c,var(--brand))}
+.bcard.today{background:linear-gradient(135deg, rgba(109,94,252,.10), rgba(255,95,162,.10));border-color:var(--brand)}
+.rank{
+  position:absolute;top:10px;right:12px;font-size:10px;font-weight:800;letter-spacing:.4px;
+  color:var(--muted);background:var(--card2);padding:3px 8px;border-radius:999px;border:1px solid var(--line);
+}
+.rank.top1{background:linear-gradient(135deg,#ffd76e,#ff9f1c);color:#4a2b00;border-color:transparent}
+.avatar{
+  width:48px;height:48px;border-radius:15px;flex:none;display:grid;place-items:center;
+  font-weight:800;font-size:19px;color:#fff;background:var(--c,var(--brand));
+  box-shadow:0 6px 16px color-mix(in srgb, var(--c,var(--brand)) 40%, transparent);
+}
+.binfo{flex:1;min-width:0;padding-right:52px}
+.bname{font-size:15.5px;font-weight:700;letter-spacing:-.2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tag{
+  font-size:10.5px;font-weight:700;padding:2.5px 8px;border-radius:999px;
+  background:color-mix(in srgb, var(--c,var(--brand)) 16%, transparent);color:var(--c,var(--brand));
+}
+.bmeta{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.55;font-weight:500}
+.bmeta b{color:var(--text);font-weight:700}
+.countdown{
+  display:inline-block;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:999px;margin-top:7px;
+  background:rgba(109,94,252,.12);color:var(--brand);
+}
+.countdown.hot{background:rgba(255,90,95,.14);color:var(--danger)}
+.countdown.now{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff}
+.bnote{
+  font-size:12px;color:var(--muted);margin-top:7px;padding:7px 10px;
+  background:var(--card2);border-radius:10px;border-left:2px solid var(--c,var(--brand));line-height:1.5;
+}
+.bacts{position:absolute;right:10px;bottom:10px;display:flex;gap:4px}
+.mini{
+  width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:13px;
+  background:var(--card2);border:1px solid var(--line);transition:.18s;
+}
+.mini:hover{background:var(--brand);color:#fff;border-color:transparent}
+
+.empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.empty .e-ico{font-size:52px;margin-bottom:12px;display:block;filter:grayscale(.2)}
+.empty h3{font-size:16px;color:var(--text);margin-bottom:6px}
+.empty p{font-size:13px;margin:0;line-height:1.6}
+
+.cal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 2px 10px}
+.cal-head h2{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.cal-nav{display:flex;gap:7px}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:5px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:10px;box-shadow:var(--shadow-sm);
+}
+.cal-dow{text-align:center;font-size:10.5px;font-weight:800;color:var(--muted);padding:5px 0;letter-spacing:.5px}
+.cal-cell{
+  min-height:74px;border-radius:11px;padding:5px 4px;background:var(--card2);
+  border:1px solid transparent;display:flex;flex-direction:column;gap:3px;transition:.18s;overflow:hidden;
+}
+.cal-cell.other{opacity:.32}
+.cal-cell.today{border-color:var(--brand);background:rgba(109,94,252,.10)}
+.cal-num{font-size:11.5px;font-weight:800;color:var(--muted);text-align:center}
+.cal-cell.today .cal-num{color:var(--brand)}
+.cal-ev{display:flex;flex-direction:column;gap:2px}
+.cal-ev-item{
+  display:flex;align-items:center;gap:3px;font-size:9px;font-weight:700;border-radius:5px;
+  padding:2px 3px;overflow:hidden;background:color-mix(in srgb, var(--c) 18%, transparent);color:var(--c);
+}
+.cal-ev-item i{
+  font-style:normal;width:12px;height:12px;border-radius:4px;flex:none;
+  display:grid;place-items:center;background:var(--c);color:#fff;font-size:8px;font-weight:800;
+}
+.cal-ev-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-more{font-size:8.5px;font-weight:800;color:var(--muted);text-align:center}
+.cal-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-bottom:4px}
+.legend-item{
+  display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--muted);
+  background:var(--card);border:1px solid var(--line);padding:5px 11px;border-radius:999px;
+}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c)}
+
+.section-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;box-shadow:var(--shadow-sm);margin-bottom:14px;
+}
+.section-card h3{font-size:14px;font-weight:800;margin-bottom:12px;letter-spacing:-.2px}
+.inline{display:flex;gap:8px}
+.inline input{flex:1}
+.glist{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.grow{
+  display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:13px;
+  background:var(--card2);border:1px solid var(--line);
+}
+.grow .gname{font-weight:700;font-size:13.5px;flex:1}
+.grow .gcount{
+  font-size:11.5px;font-weight:700;color:var(--muted);background:var(--card);
+  padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
+.field > span{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.2px}
+input[type=text],input[type=number],input[type=time],input[type=date],select,textarea{
+  width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);
+  background:var(--card2);outline:none;transition:.18s;font-size:14px;font-weight:500;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--brand);background:var(--card);box-shadow:0 0 0 3px rgba(109,94,252,.13)}
+textarea{resize:vertical;min-height:52px;font-family:inherit}
+select{
+  appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%236b7290' stroke-width='1.8' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;
+}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.row3{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:11px}
+
+/* reminder chips */
+.remind-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:2px}
+.r-chip{
+  padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:700;
+  background:var(--card2);border:1px solid var(--line);color:var(--muted);
+  transition:.18s;cursor:pointer;
+}
+.r-chip:hover{border-color:var(--brand);color:var(--brand)}
+.r-chip.active{
+  background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;
+  border-color:transparent;box-shadow:0 4px 12px rgba(109,94,252,.32);
+}
+
+.btn{
+  padding:12px 18px;border-radius:13px;font-weight:700;font-size:14px;
+  transition:.18s;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+}
+.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 8px 22px rgba(109,94,252,.35)}
+.btn.primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(109,94,252,.45)}
+.btn.primary:active{transform:scale(.98)}
+.btn.ghost{background:var(--card2);border:1px solid var(--line);color:var(--text)}
+.btn.ghost:hover{border-color:var(--brand)}
+.btn.danger{background:rgba(255,90,95,.12);color:var(--danger);border:1px solid rgba(255,90,95,.3)}
+.btn.block{width:100%}
+.btn-mini{
+  padding:0 13px;border-radius:12px;background:var(--card2);border:1px solid var(--line);
+  font-weight:700;font-size:12.5px;white-space:nowrap;transition:.18s;
+  height:38px; display:inline-flex; align-items:center; justify-content:center;
+}
+.btn-mini:hover{border-color:var(--brand);color:var(--brand)}
+
+.fab{
+  position:fixed;right:20px;bottom:88px;z-index:45;width:58px;height:58px;border-radius:20px;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:28px;
+  font-weight:400;line-height:1;display:grid;place-items:center;
+  box-shadow:0 12px 30px rgba(109,94,252,.5);transition:.22s;
+}
+.fab:hover{transform:translateY(-3px) rotate(90deg)}
+.fab:active{transform:scale(.92)}
+
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;justify-content:space-around;
+  align-items:center;padding:9px 8px calc(9px + env(safe-area-inset-bottom));
+  background:color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);
+}
+.tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;
+  border-radius:12px;color:var(--muted);font-size:10.5px;font-weight:700;transition:.18s;
+}
+.tab .t-ico{font-size:19px;line-height:1;transition:.2s}
+.tab.active{color:var(--brand)}
+.tab.active .t-ico{transform:translateY(-2px) scale(1.1)}
+
+.sheet{position:fixed;inset:0;z-index:100;display:none}
+.sheet.open{display:block}
+.sheet-backdrop{position:absolute;inset:0;background:rgba(12,14,28,.5);backdrop-filter:blur(4px);animation:fade .22s}
+.sheet-panel{
+  position:absolute;left:0;right:0;bottom:0;max-height:92vh;background:var(--card);
+  border-radius:26px 26px 0 0;display:flex;flex-direction:column;
+  animation:slideUp .3s cubic-bezier(.22,1,.36,1);box-shadow:0 -10px 40px rgba(0,0,0,.2);
+  max-width:760px;margin:0 auto;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.sheet-head{display:flex;align-items:center;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
+.sheet-head h3{font-size:17px;font-weight:800;letter-spacing:-.3px;flex:1}
+.sheet-body{padding:16px 18px;overflow-y:auto;flex:1}
+.sheet-foot{display:flex;gap:10px;padding:14px 18px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.sheet-foot .btn{flex:1}
+.divider{
+  font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1px;text-transform:uppercase;
+  margin:18px 0 12px;display:flex;align-items:center;gap:10px;
+}
+.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.pick-list{max-height:46vh;overflow-y:auto;display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.pick-row{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;
+  background:var(--card2);border:1px solid var(--line);cursor:pointer;transition:.15s;
+}
+.pick-row:hover{border-color:var(--brand)}
+.pick-row input[type=checkbox]{width:19px;height:19px;accent-color:var(--brand);cursor:pointer;flex:none}
+.pick-row .pname{font-weight:700;font-size:13.5px;flex:1}
+.pick-row .pdate{font-size:11.5px;color:var(--muted);font-weight:600}
+
+.toast-wrap{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:200;
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;
+  width:max-content;max-width:92vw;
+}
+.toast{
+  background:var(--text);color:var(--bg);padding:11px 20px;border-radius:999px;
+  font-size:13px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.25);
+  animation:toastIn .3s cubic-bezier(.22,1,.36,1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
+
+.alarm{
+  position:fixed;inset:0;z-index:300;display:none;place-items:center;padding:22px;
+  background:rgba(10,12,24,.72);backdrop-filter:blur(8px);
+}
+.alarm.open{display:grid}
+.alarm-card{
+  background:var(--card);border-radius:26px;padding:30px 26px;text-align:center;
+  max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.4);
+  animation:pop .4s cubic-bezier(.22,1.4,.36,1);
+}
+@keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
+.alarm-ico{font-size:56px;animation:ring 1s ease-in-out infinite;display:block;margin-bottom:8px}
+@keyframes ring{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.alarm-card h2{font-size:21px;font-weight:800;margin-bottom:6px;letter-spacing:-.4px}
+.alarm-card p{font-size:14px;color:var(--muted);margin:0 0 22px;line-height:1.6;font-weight:500}
+.alarm-card .btn{width:100%}
+
+.srow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:none}
+.srow .s-label{flex:1;font-size:13.5px;font-weight:600}
+.srow .s-desc{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:2px}
+.switch{
+  width:48px;height:28px;border-radius:999px;background:var(--line);
+  position:relative;transition:.22s;flex:none;cursor:pointer;
+}
+.switch::after{
+  content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:#fff;transition:.22s;box-shadow:0 2px 6px rgba(0,0,0,.2);
+}
+.switch.on{background:linear-gradient(135deg,var(--brand),var(--brand2))}
+.switch.on::after{left:23px}
+
+@media(max-width:420px){
+  .cal-cell{min-height:62px}
+  .cal-ev-item span{display:none}
+  .cal-ev-item{justify-content:center}
+  .binfo{padding-right:46px}
+  #btnLang{font-size:10.5px}
+  .hd-actions{gap:6px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-top">
+    <div class="logo">🎂</div>
+    <div>
+      <div class="hd-title" data-i18n="appTitle">Birthday Reminder</div>
+      <div class="hd-sub" id="hdSub">Never miss a birthday!</div>
+    </div>
+    <div class="hd-actions">
+      <button class="icon-btn" id="btnLang" title="Switch language">EN</button>
+      <button class="icon-btn" id="btnTheme" title="Theme">🌙</button>
+      <button class="icon-btn" id="btnBell" title="Notifications">🔔</button>
+    </div>
+  </div>
+  <div class="searchbar">
+    <span class="s-ico">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search by name, group or note..." data-i18n-ph="searchPh">
+  </div>
+</header>
+
+<main>
+  <section class="view active" id="view-home">
+    <div class="chips" id="filterChips"></div>
+    <div class="blist" id="birthdayList"></div>
+  </section>
+
+  <section class="view" id="view-calendar">
+    <div class="cal-head">
+      <h2 id="calLabel">—</h2>
+      <div class="cal-nav">
+        <button class="icon-btn" id="calPrev">‹</button>
+        <button class="icon-btn" id="calToday">•</button>
+        <button class="icon-btn" id="calNext">›</button>
+      </div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend" id="calLegend"></div>
+  </section>
+
+  <section class="view" id="view-groups">
+    <div class="section-card" style="margin-top:16px">
+      <h3 data-i18n="newGroupTitle">Create new group</h3>
+      <div class="inline">
+        <input type="text" id="newGroupInput" placeholder="e.g. Cousins, Gym, School..." data-i18n-ph="newGroupPh">
+        <button class="btn-mini" id="btnAddGroup" data-i18n="addBtn">Add</button>
+      </div>
+    </div>
+    <div class="section-card">
+      <h3 data-i18n="allGroups">All Groups</h3>
+      <div class="glist" id="groupList"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-settings">
+    <div class="section-card" style="margin-top:16px">
+      <h3 data-i18n="notifSection">🔔 Notification &amp; Alarm</h3>
+      <div class="srow">
+        <div style="flex:1">
+          <div class="s-label" data-i18n="browserNotif">Browser Notification</div>
+          <div class="s-desc" id="notifStatus">Checking...</div>
+        </div>
+        <button class="btn-mini" id="btnEnableNotif" data-i18n="enableBtn" style="padding:9px 14px">Enable</button>
+      </div>
+      <div class="srow">
+        <div style="flex:1">
+          <div class="s-label" data-i18n="alarmSound">Alarm sound</div>
+          <div class="s-desc" data-i18n="alarmSoundDesc">Plays a beep when reminder fires</div>
+        </div>
+        <div class="switch on" id="swSound"></div>
+      </div>
+      <button class="btn ghost block" id="btnTestNotif" style="margin-top:12px" data-i18n="testNotif">🔊 Test reminder</button>
+    </div>
+
+    <div class="section-card">
+      <h3 data-i18n="contactsSection">📇 Import from Contacts</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin:0 0 14px;line-height:1.6" data-i18n="contactsDesc">
+        Import birthdays directly from your phone contacts. You can pick which ones to add.
+      </p>
+      <button class="btn primary block" id="btnContacts" style="margin-bottom:9px" data-i18n="contactsBtn">📱 Import from Contacts</button>
+      <button class="btn ghost block" id="btnVcf" data-i18n="vcfBtn">📄 Import vCard (.vcf) file</button>
+      <input type="file" id="vcfInput" accept=".vcf,text/vcard" hidden>
+    </div>
+
+    <div class="section-card">
+      <h3 data-i18n="backupSection">💾 Backup &amp; Restore</h3>
+      <div class="row2">
+        <button class="btn ghost" id="btnExport" data-i18n="exportBtn">⬇️ Export</button>
+        <button class="btn ghost" id="btnImport" data-i18n="importBtn">⬆️ Import</button>
+      </div>
+      <input type="file" id="jsonInput" accept="application/json" hidden>
+      <p style="font-size:11.5px;color:var(--muted);margin:12px 0 0;line-height:1.6" data-i18n="backupDesc">
+        Export saves all data to a JSON file. Import brings it back.
+      </p>
+    </div>
+
+    <div class="section-card">
+      <h3 data-i18n="generalSection">⚙️ General</h3>
+      <div class="srow">
+        <div style="flex:1">
+          <div class="s-label" data-i18n="language">Language</div>
+          <div class="s-desc" data-i18n="languageDesc">Choose English or Hindi</div>
+        </div>
+        <button class="btn-mini" id="btnLang2" style="padding:9px 14px">EN / हिं</button>
+      </div>
+      <div class="srow">
+        <div style="flex:1">
+          <div class="s-label" data-i18n="darkMode">Dark Mode</div>
+          <div class="s-desc" data-i18n="darkModeDesc">Easier on the eyes</div>
+        </div>
+        <div class="switch" id="swTheme"></div>
+      </div>
+      <div class="srow">
+        <div style="flex:1">
+          <div class="s-label" data-i18n="demoData">Load demo data</div>
+          <div class="s-desc" data-i18n="demoDataDesc">Sample birthdays to try the app</div>
+        </div>
+        <button class="btn-mini" id="btnDemo" style="padding:9px 14px" data-i18n="loadBtn">Load</button>
+      </div>
+      <div class="srow">
+        <div style="flex:1">
+          <div class="s-label" style="color:var(--danger)" data-i18n="clearData">Delete all data</div>
+          <div class="s-desc" data-i18n="clearDataDesc">This cannot be undone</div>
+        </div>
+        <button class="btn-mini" id="btnClear" style="padding:9px 14px;color:var(--danger);border-color:rgba(255,90,95,.35)" data-i18n="clearBtn">Clear</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:8px 0 24px;font-size:11.5px;color:var(--muted);line-height:1.7" id="footerNote">
+      Made with 💜 · Birthday Reminder v1.1
+    </div>
+  </section>
+</main>
+
+<button class="fab" id="fabAdd" title="Add birthday">+</button>
+
+<nav class="tabbar">
+  <button class="tab active" data-view="home"><span class="t-ico">🏠</span><span data-i18n="tabHome">Home</span></button>
+  <button class="tab" data-view="calendar"><span class="t-ico">📅</span><span data-i18n="tabCal">Calendar</span></button>
+  <button class="tab" data-view="groups"><span class="t-ico">🏷️</span><span data-i18n="tabGroups">Groups</span></button>
+  <button class="tab" data-view="settings"><span class="t-ico">⚙️</span><span data-i18n="tabSettings">Settings</span></button>
+</nav>
+
+<!-- ADD/EDIT SHEET -->
+<div class="sheet" id="sheet">
+  <div class="sheet-backdrop" data-close></div>
+  <div class="sheet-panel">
+    <div class="sheet-head">
+      <h3 id="sheetTitle">New Birthday 🎂</h3>
+      <button class="icon-btn" data-close>✕</button>
+    </div>
+    <div class="sheet-body">
+      <label class="field">
+        <span data-i18n="nameLbl">Name *</span>
+        <input type="text" id="fName" placeholder="e.g. Rahul Sharma" data-i18n-ph="namePh" autocomplete="off">
+      </label>
+
+      <div class="row3">
+        <label class="field"><span data-i18n="dayLbl">Day</span><select id="fDay"></select></label>
+        <label class="field"><span data-i18n="monthLbl">Month</span><select id="fMonth"></select></label>
+        <label class="field"><span data-i18n="yearLbl">Year</span><input type="number" id="fYear" min="1900" max="2100" placeholder="1998"></label>
+      </div>
+
+      <label class="field">
+        <span data-i18n="groupLbl">Group / Label</span>
+        <div class="inline">
+          <select id="fGroup"></select>
+          <button type="button" class="btn-mini" id="btnQuickGroup" data-i18n="newGroupBtn">+ New</button>
+        </div>
+      </label>
+
+      <label class="field">
+        <span data-i18n="noteLbl">Note (optional)</span>
+        <textarea id="fNote" rows="2" placeholder="Gift idea, phone number, favourite cake..." data-i18n-ph="notePh"></textarea>
+      </label>
+
+      <div class="divider" data-i18n="reminderSection">Reminder Settings</div>
+
+      <div class="row2">
+        <label class="field"><span data-i18n="alarmTime">Alarm Time</span><input type="time" id="fTime" value="09:00"></label>
+        <label class="field">
+          <span data-i18n="repeatLbl">Remind for how many years</span>
+          <select id="fRepeat">
+            <option value="yearly" data-i18n="yearly">Every year (forever)</option>
+            <option value="once" data-i18n="once">Only this once</option>
+            <option value="custom" data-i18n="customRepeat">Custom — N years</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field" id="fYearsWrap" style="display:none">
+        <span data-i18n="yearsLbl">For how many years?</span>
+        <input type="number" id="fYears" min="1" max="50" value="3">
+      </label>
+
+      <div class="field">
+        <span data-i18n="remindBefore">Remind me</span>
+        <div class="remind-chips" id="fRemindChips"></div>
+        <div class="inline" style="margin-top:4px;gap:6px">
+          <input type="number" id="fCustomDays" min="1" max="365" placeholder="Custom days" data-i18n-ph="customDaysPh">
+          <button type="button" class="btn-mini" id="btnAddCustomDays" data-i18n="addBtn">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close data-i18n="cancelBtn">Cancel</button>
+      <button class="btn primary" id="btnSave" data-i18n="saveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PICKER SHEET -->
+<div class="sheet" id="pickSheet">
+  <div class="sheet-backdrop" data-close></div>
+  <div class="sheet-panel">
+    <div class="sheet-head">
+      <h3 data-i18n="importTitle">Import from Contacts</h3>
+      <button class="icon-btn" data-close>✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="inline" style="margin-bottom:6px">
+        <button class="btn-mini" id="pickAll" style="padding:0 14px" data-i18n="selectAll">Select All</button>
+        <button class="btn-mini" id="pickNone" style="padding:0 14px" data-i18n="clearSel">Clear</button>
+        <span style="flex:1"></span>
+        <span id="pickCount" style="font-size:12.5px;font-weight:700;color:var(--muted)">0</span>
+      </div>
+      <div class="pick-list" id="pickList"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close data-i18n="cancelBtn">Cancel</button>
+      <button class="btn primary" id="pickImport" data-i18n="importBtn2">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- ALARM -->
+<div class="alarm" id="alarm">
+  <div class="alarm-card">
+    <span class="alarm-ico">🎉</span>
+    <h2 id="alarmTitle">Birthday!</h2>
+    <p id="alarmBody">—</p>
+    <button class="btn primary" id="alarmClose" data-i18n="alarmOk">Got it!</button>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ==================================================================
+   BIRTHDAY REMINDER v1.1 — i18n + multi-reminder
+   ================================================================== */
+
+const LS_KEY = 'bday_reminder_v1';
+const DEFAULT_GROUPS = ['Family', 'Friends', 'College', 'Colleagues'];
+const PALETTE = ['#6d5efc','#ff5fa2','#00c2a8','#ff9f1c','#4d96ff','#e056fd','#00b894','#ff6b6b','#f7b731','#20bf6b','#5f27cd','#ee5253'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+/* ---------------- i18n ---------------- */
+const T = {
+  en: {
+    appTitle: 'Birthday Reminder', appSub: "Don't miss anyone's birthday!",
+    searchPh: 'Search by name, group or note...',
+    filterAll: '🎯 All',
+    tabHome: 'Home', tabCal: 'Calendar', tabGroups: 'Groups', tabSettings: 'Settings',
+    addTitle: 'New Birthday 🎂', editTitle: 'Edit Birthday ✏️',
+    nameLbl: 'Name *', namePh: 'e.g. Rahul Sharma',
+    dayLbl: 'Day', monthLbl: 'Month', yearLbl: 'Year',
+    groupLbl: 'Group / Label', newGroupBtn: '+ New',
+    noteLbl: 'Note (optional)', notePh: 'Gift idea, phone number, favourite cake...',
+    reminderSection: 'Reminder Settings', alarmTime: 'Alarm Time',
+    remindBefore: 'Remind me', remindHint: 'Multiple allowed',
+    customDaysPh: 'Custom days', addBtn: 'Add',
+    repeatLbl: 'Remind for how many years',
+    yearly: 'Every year (forever)', once: 'Only this once', customRepeat: 'Custom — N years',
+    yearsLbl: 'For how many years?',
+    saveBtn: 'Save', cancelBtn: 'Cancel',
+    sameDay: 'Same day', oneDay: '1 day before', twoDays: '2 days before', oneWeek: '1 week before',
+    daysBeforeSuffix: 'days before',
+    emptyTitle: 'No birthdays yet',
+    emptyDesc: 'Tap "+" below to save birthdays of your friends, family or colleagues.',
+    emptySearchTitle: 'Nothing found', emptySearchDesc: 'Try changing the filter or search.',
+    today: '🎉 Today! Happy Birthday!', tomorrow: '⏰ Tomorrow!',
+    daysToGo: '{n} days to go',
+    newGroupTitle: 'Create new group', newGroupPh: 'e.g. Cousins, Gym, School...',
+    allGroups: 'All Groups', noGroups: 'No groups yet.',
+    notifSection: '🔔 Notification & Alarm', browserNotif: 'Browser Notification',
+    enableBtn: 'Enable', alarmSound: 'Alarm sound', alarmSoundDesc: 'Plays a beep when reminder fires',
+    testNotif: '🔊 Test reminder',
+    notifUnsupported: 'Not supported by this browser',
+    notifGranted: '✅ Enabled — reminders will come',
+    notifDenied: '❌ Blocked — allow from browser settings',
+    notifNotEnabled: 'Not enabled yet',
+    contactsSection: '📇 Import from Contacts',
+    contactsDesc: 'Import birthdays directly from your phone contacts. You can pick which ones to add.',
+    contactsBtn: '📱 Import from Contacts', vcfBtn: '📄 Import vCard (.vcf) file',
+    backupSection: '💾 Backup & Restore', exportBtn: '⬇️ Export', importBtn: '⬆️ Import',
+    backupDesc: 'Export saves all data to a JSON file. Import brings it back.',
+    generalSection: '⚙️ General', language: 'Language', languageDesc: 'Choose English or Hindi',
+    darkMode: 'Dark Mode', darkModeDesc: 'Easier on the eyes',
+    demoData: 'Load demo data', demoDataDesc: 'Sample birthdays to try the app',
+    clearData: 'Delete all data', clearDataDesc: 'This cannot be undone',
+    loadBtn: 'Load', clearBtn: 'Clear',
+    importTitle: 'Import from Contacts', selectAll: 'Select All', clearSel: 'Clear', importBtn2: 'Import',
+    nameRequired: 'Please enter a name', invalidYear: 'Invalid year',
+    saved: '✅ Saved', added: '🎉 Birthday added', deleted: '🗑️ Deleted',
+    groupAdded: '✅ Group created', groupExists: 'Group already exists',
+    enterGroupName: 'Enter a group name',
+    soundOn: '🔊 Sound on', soundOff: '🔇 Sound off',
+    notifOn: '🔔 Notifications enabled', notifDeniedToast: 'Notification not allowed',
+    testPlayed: 'Test reminder played', exported: '⬇️ Exported', imported: '✅ Imported',
+    invalidFile: '❌ Invalid file', dataCleared: '🗑️ All data deleted', demoLoaded: '🎁 Demo data loaded',
+    selectOne: 'Select at least one', invalidDays: 'Enter a valid number of days',
+    groupDeleteConfirm: 'Delete this group? Birthdays will move to "General".',
+    deleteConfirm: 'Delete this birthday?',
+    contactsNotSupported: '❌ Browser does not support Contacts. Use vCard instead.',
+    noContactBdays: 'No birthdays found in contacts 😕',
+    permissionFailed: '❌ Permission denied or cancelled',
+    noBdayInFile: 'No birthdays found in this file',
+    fireTitle: "{name}'s birthday!",
+    fireToday: 'Today! Wish them 🎉',
+    fireTomorrow: 'Tomorrow ({date}) — gift ready?',
+    fireInDays: '{n} days to go ({date})',
+    onTheDay: 'Today', inNDays: 'in {n} days',
+    ageTurning: 'turning {n}', ageYears: 'years',
+    greetingToday: '🎉 {name}\'s birthday today!',
+    greetingTomorrow: '⏰ Tomorrow is {name}\'s birthday',
+    greetingIn: "{name}'s birthday in {n} days",
+    alarmOk: 'Got it!',
+    footer: 'Made with 💜 · Birthday Reminder v1.1'
+  },
+  hi: {
+    appTitle: 'जन्मदिन रिमाइंडर', appSub: 'किसी का जन्मदिन मिस मत करो!',
+    searchPh: 'नाम, ग्रुप या नोट से खोजें...',
+    filterAll: '🎯 सब',
+    tabHome: 'होम', tabCal: 'कैलेंडर', tabGroups: 'ग्रुप', tabSettings: 'सेटिंग',
+    addTitle: 'नया जन्मदिन 🎂', editTitle: 'जन्मदिन एडिट करें ✏️',
+    nameLbl: 'नाम *', namePh: 'जैसे: राहुल शर्मा',
+    dayLbl: 'दिन', monthLbl: 'महीना', yearLbl: 'साल',
+    groupLbl: 'ग्रुप / लेबल', newGroupBtn: '+ नया',
+    noteLbl: 'नोट (ऑप्शनल)', notePh: 'गिफ्ट आइडिया, फ़ोन नंबर, पसंदीदा केक...',
+    reminderSection: 'रिमाइंडर सेटिंग', alarmTime: 'अलार्म समय',
+    remindBefore: 'रिमाइंड करें', remindHint: 'एक से ज़्यादा चुन सकते हैं',
+    customDaysPh: 'कस्टम दिन', addBtn: 'जोड़ें',
+    repeatLbl: 'कितने साल तक रिमाइंड करें',
+    yearly: 'हर साल (हमेशा)', once: 'सिर्फ़ इस बार', customRepeat: 'कस्टम — N साल तक',
+    yearsLbl: 'कितने साल तक?',
+    saveBtn: 'सेव करें', cancelBtn: 'कैंसल',
+    sameDay: 'उसी दिन', oneDay: '1 दिन पहले', twoDays: '2 दिन पहले', oneWeek: '1 हफ़्ता पहले',
+    daysBeforeSuffix: 'दिन पहले',
+    emptyTitle: 'अभी कोई जन्मदिन नहीं',
+    emptyDesc: 'नीचे "+" दबाकर अपने दोस्तों, परिवार या साथियों के जन्मदिन सेव करें।',
+    emptySearchTitle: 'कुछ नहीं मिला', emptySearchDesc: 'फ़िल्टर या सर्च बदलकर देखें।',
+    today: '🎉 आज है! जन्मदिन मुबारक!', tomorrow: '⏰ कल है!',
+    daysToGo: '{n} दिन बाकी',
+    newGroupTitle: 'नया ग्रुप बनाएँ', newGroupPh: 'जैसे: कज़िन्स, जिम, स्कूल...',
+    allGroups: 'सभी ग्रुप', noGroups: 'अभी कोई ग्रुप नहीं।',
+    notifSection: '🔔 नोटिफ़िकेशन और अलार्म', browserNotif: 'ब्राउज़र नोटिफ़िकेशन',
+    enableBtn: 'चालू करें', alarmSound: 'अलार्म साउंड', alarmSoundDesc: 'रिमाइंडर आने पर बीप बजेगा',
+    testNotif: '🔊 टेस्ट रिमाइंडर',
+    notifUnsupported: 'यह ब्राउज़र सपोर्ट नहीं करता',
+    notifGranted: '✅ चालू — रिमाइंडर मिलेंगे',
+    notifDenied: '❌ ब्लॉक — ब्राउज़र सेटिंग से allow करें',
+    notifNotEnabled: 'अभी चालू नहीं है',
+    contactsSection: '📇 कॉन्टैक्ट्स से इंपोर्ट करें',
+    contactsDesc: 'सीधे अपने फ़ोन कॉन्टैक्ट्स से जन्मदिन इंपोर्ट करें। आप चुन सकते हैं कौन से जोड़ने हैं।',
+    contactsBtn: '📱 कॉन्टैक्ट्स से इंपोर्ट करें', vcfBtn: '📄 vCard (.vcf) फ़ाइल इंपोर्ट करें',
+    backupSection: '💾 बैकअप और रिस्टोर', exportBtn: '⬇️ एक्सपोर्ट', importBtn: '⬆️ इंपोर्ट',
+    backupDesc: 'एक्सपोर्ट से सारा डेटा JSON फ़ाइल में सेव होता है। इंपोर्ट से वापस लोड करें।',
+    generalSection: '⚙️ जनरल', language: 'भाषा', languageDesc: 'अंग्रेज़ी या हिंदी चुनें',
+    darkMode: 'डार्क मोड', darkModeDesc: 'आँखों के लिए आरामदायक',
+    demoData: 'डेमो डेटा लोड करें', demoDataDesc: 'ऐप ट्राई करने के लिए सैंपल जन्मदिन',
+    clearData: 'सारा डेटा डिलीट करें', clearDataDesc: 'इसे अनडू नहीं किया जा सकता',
+    loadBtn: 'लोड', clearBtn: 'क्लियर',
+    importTitle: 'कॉन्टैक्ट्स से इंपोर्ट', selectAll: 'सभी चुनें', clearSel: 'क्लियर', importBtn2: 'इंपोर्ट',
+    nameRequired: 'कृपया नाम भरें', invalidYear: 'साल सही नहीं है',
+    saved: '✅ सेव हो गया', added: '🎉 जन्मदिन जोड़ा गया', deleted: '🗑️ डिलीट हो गया',
+    groupAdded: '✅ ग्रुप बन गया', groupExists: 'यह ग्रुप पहले से है',
+    enterGroupName: 'ग्रुप का नाम भरें',
+    soundOn: '🔊 साउंड चालू', soundOff: '🔇 साउंड बंद',
+    notifOn: '🔔 नोटिफ़िकेशन चालू', notifDeniedToast: 'नोटिफ़िकेशन की अनुमति नहीं',
+    testPlayed: 'टेस्ट रिमाइंडर चलाया', exported: '⬇️ एक्सपोर्ट हो गया', imported: '✅ इंपोर्ट हो गया',
+    invalidFile: '❌ फ़ाइल सही नहीं', dataCleared: '🗑️ सारा डेटा डिलीट हो गया', demoLoaded: '🎁 डेमो डेटा लोड हो गया',
+    selectOne: 'कम से कम एक चुनें', invalidDays: 'सही दिन भरें',
+    groupDeleteConfirm: 'यह ग्रुप डिलीट करें? जन्मदिन "General" में चले जाएँगे।',
+    deleteConfirm: 'यह जन्मदिन डिलीट करें?',
+    contactsNotSupported: '❌ ब्राउज़र कॉन्टैक्ट्स सपोर्ट नहीं करता। vCard इस्तेमाल करें।',
+    noContactBdays: 'कॉन्टैक्ट्स में कोई जन्मदिन नहीं मिला 😕',
+    permissionFailed: '❌ अनुमति नहीं मिली या कैंसल किया',
+    noBdayInFile: 'इस फ़ाइल में कोई जन्मदिन नहीं मिला',
+    fireTitle: '{name} का जन्मदिन!',
+    fireToday: 'आज है! विश करना मत भूलना 🎉',
+    fireTomorrow: 'कल है ({date}) — गिफ्ट तैयार है?',
+    fireInDays: '{n} दिन बाकी ({date})',
+    onTheDay: 'आज', inNDays: '{n} दिन बाकी',
+    ageTurning: '{n} साल के होंगे', ageYears: 'साल',
+    greetingToday: '🎉 आज {name} का जन्मदिन है!',
+    greetingTomorrow: '⏰ कल {name} का जन्मदिन है',
+    greetingIn: '{name} का जन्मदिन {n} दिन बाद',
+    alarmOk: 'ठीक है!',
+    footer: 'Made with 💜 · Birthday Reminder v1.1'
+  }
+};
+
+let currentLang = 'en';
+function t(key) {
+  const lang = T[currentLang] || T.en;
+  return (lang[key] != null ? lang[key] : (T.en[key] != null ? T.en[key] : key));
+}
+function tFmt(key, vars) {
+  let s = t(key);
+  for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  return s;
+}
+
+/* ---------------- state ---------------- */
+let state = {
+  birthdays: [], groups: [...DEFAULT_GROUPS],
+  theme: 'light', sound: true, lang: 'en', fired: {}
+};
+let ui = { filter: 'All', search: '', calY: new Date().getFullYear(), calM: new Date().getMonth(), editingId: null };
+let formReminders = new Set([0]);
+
+const $ = (id) => document.getElementById(id);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function groupColor(g) {
+  if (!g) return '#8b93a7';
+  let h = 0;
+  for (let i = 0; i < g.length; i++) h = (h * 31 + g.charCodeAt(i)) % 1000003;
+  return PALETTE[h % PALETTE.length];
+}
+const startOfDay = (d) => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+const daysInMonth = (y, m) => new Date(y, m, 0).getDate();
+const makeDate = (y, m, d) => new Date(y, m - 1, Math.min(d, daysInMonth(y, m)));
+
+function nextOccurrence(b, from = new Date()) {
+  const t = startOfDay(from);
+  let y = t.getFullYear();
+  let d = makeDate(y, b.month, b.day);
+  if (d < t) d = makeDate(y + 1, b.month, b.day);
+  return d;
+}
+const daysUntil = (d) => Math.round((startOfDay(d) - startOfDay(new Date())) / 86400000);
+const ageTurning = (b, occ) => (!b.year ? null : occ.getFullYear() - b.year);
+const fmtDateNoYear = (d) => d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()];
+
+/* ---------------- storage ---------------- */
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const p = JSON.parse(raw);
+      state.birthdays = Array.isArray(p.birthdays) ? p.birthdays : [];
+      state.groups = (Array.isArray(p.groups) && p.groups.length) ? p.groups : [...DEFAULT_GROUPS];
+      state.theme = p.theme || 'light';
+      state.sound = p.sound !== false;
+      state.lang = p.lang || 'en';
+      state.fired = p.fired || {};
+      // migrate: old `before` -> reminders array
+      state.birthdays.forEach(b => {
+        if (!Array.isArray(b.reminders)) b.reminders = [b.before != null ? b.before : 0];
+      });
+    } else {
+      state.theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+  } catch (e) { console.warn(e); }
+}
+
+/* ---------------- toast ---------------- */
+function toast(msg) {
+  const wrap = $('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity .3s, transform .3s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    setTimeout(() => el.remove(), 320);
+  }, 2400);
+}
+
+/* ---------------- theme & lang ---------------- */
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', state.theme);
+  $('btnTheme').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+  $('swTheme').classList.toggle('on', state.theme === 'dark');
+}
+
+function applyLang() {
+  currentLang = state.lang || 'en';
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPh);
+  });
+  $('btnLang').textContent = currentLang === 'en' ? 'EN' : 'हिं';
+  $('btnLang').title = currentLang === 'en' ? 'हिंदी में बदलें' : 'Switch to English';
+  $('footerNote').textContent = t('footer');
+  // refresh chip & sheet if open
+  renderAll();
+  if ($('sheet').classList.contains('open')) {
+    $('sheetTitle').textContent = ui.editingId ? t('editTitle') : t('addTitle');
+    renderRemindChips();
+  }
+}
+
+/* ==================================================================
+   RENDER — HOME
+   ================================================================== */
+function getSorted() {
+  return state.birthdays.map(b => {
+    const occ = nextOccurrence(b);
+    return { b, occ, days: daysUntil(occ), age: ageTurning(b, occ) };
+  }).sort((x, y) => x.days - y.days || x.b.name.localeCompare(y.b.name));
+}
+
+function renderHome() {
+  const chipWrap = $('filterChips');
+  const groups = ['All', ...state.groups];
+  chipWrap.innerHTML = groups.map(g =>
+    `<button class="chip ${ui.filter === g ? 'active' : ''}" data-filter="${esc(g)}">${g === 'All' ? t('filterAll') : esc(g)}</button>`
+  ).join('');
+
+  const list = $('birthdayList');
+  let items = getSorted();
+  if (ui.filter !== 'All') items = items.filter(x => x.b.group === ui.filter);
+  if (ui.search.trim()) {
+    const q = ui.search.trim().toLowerCase();
+    items = items.filter(x =>
+      x.b.name.toLowerCase().includes(q) ||
+      (x.b.group || '').toLowerCase().includes(q) ||
+      (x.b.note || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (!state.birthdays.length) {
+    list.innerHTML = `<div class="empty"><span class="e-ico">🎈</span>
+      <h3>${t('emptyTitle')}</h3><p>${t('emptyDesc')}</p></div>`;
+    return;
+  }
+  if (!items.length) {
+    list.innerHTML = `<div class="empty"><span class="e-ico">🔍</span>
+      <h3>${t('emptySearchTitle')}</h3><p>${t('emptySearchDesc')}</p></div>`;
+    return;
+  }
+
+  list.innerHTML = items.map((x, i) => {
+    const b = x.b;
+    const c = groupColor(b.group);
+    const isToday = x.days === 0;
+    let cdClass = '', cdText = '';
+    if (isToday) { cdClass = 'now'; cdText = t('today'); }
+    else if (x.days === 1) { cdClass = 'hot'; cdText = t('tomorrow'); }
+    else if (x.days <= 7) { cdClass = 'hot'; cdText = tFmt('daysToGo', { n: x.days }); }
+    else { cdText = tFmt('daysToGo', { n: x.days }); }
+    const rankCls = i === 0 ? 'top1' : '';
+    const ageStr = x.age !== null
+      ? (currentLang === 'hi'
+          ? ` · <b>${x.age} ${t('ageYears')}</b> ${t('ageTurning').replace('{n}', '').replace('साल के होंगे','के होंगे').trim()}`
+          : ` · <b>${tFmt('ageTurning', { n: x.age })}</b>`)
+      : '';
+
+    return `
+      <div class="bcard ${isToday ? 'today' : ''}" style="--c:${c}" data-id="${b.id}">
+        <div class="rank ${rankCls}">#${i + 1}</div>
+        <div class="avatar" style="--c:${c}">${esc(b.name.trim()[0].toUpperCase())}</div>
+        <div class="binfo">
+          <div class="bname">${esc(b.name)}
+            <span class="tag" style="--c:${c}">${esc(b.group || 'General')}</span>
+          </div>
+          <div class="bmeta">${b.day} ${MONTHS[b.month - 1]}${b.year ? ' ' + b.year : ''}${ageStr}</div>
+          <div><span class="countdown ${cdClass}">${cdText}</span></div>
+          ${b.note ? `<div class="bnote">📝 ${esc(b.note)}</div>` : ''}
+        </div>
+        <div class="bacts">
+          <button class="mini" data-act="edit" data-id="${b.id}" title="Edit">✏️</button>
+          <button class="mini" data-act="del" data-id="${b.id}" title="Delete">🗑️</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ==================================================================
+   RENDER — CALENDAR
+   ================================================================== */
+function renderCalendar() {
+  const y = ui.calY, m = ui.calM;
+  $('calLabel').textContent = MONTHS[m] + ' ' + y;
+
+  const map = {};
+  state.birthdays.forEach(b => {
+    const k = b.month + '-' + b.day;
+    (map[k] = map[k] || []).push(b);
+  });
+
+  const grid = $('calGrid');
+  let html = DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
+  const first = new Date(y, m, 1);
+  const startDow = first.getDay();
+  const dim = new Date(y, m + 1, 0).getDate();
+  const total = Math.ceil((startDow + dim) / 7) * 7;
+  const today = startOfDay(new Date());
+
+  for (let i = 0; i < total; i++) {
+    const dayNum = i - startDow + 1;
+    const cellDate = new Date(y, m, dayNum);
+    const other = dayNum < 1 || dayNum > dim;
+    const isToday = startOfDay(cellDate).getTime() === today.getTime();
+    const evs = (!other && map[(cellDate.getMonth() + 1) + '-' + cellDate.getDate()]) || [];
+    html += `<div class="cal-cell ${other ? 'other' : ''} ${isToday ? 'today' : ''}">
+      <div class="cal-num">${cellDate.getDate()}</div>
+      <div class="cal-ev">
+        ${evs.slice(0, 2).map(b => `
+          <div class="cal-ev-item" style="--c:${groupColor(b.group)}">
+            <i>${esc(b.name.trim()[0].toUpperCase())}</i>
+            <span>${esc(b.name)}</span>
+          </div>`).join('')}
+        ${evs.length > 2 ? `<div class="cal-more">+${evs.length - 2}</div>` : ''}
+      </div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+
+  const used = [...new Set(state.birthdays.map(b => b.group || 'General'))];
+  $('calLegend').innerHTML = used.length
+    ? used.map(g => `<div class="legend-item"><span class="dot" style="--c:${groupColor(g)}"></span>${esc(g)}</div>`).join('')
+    : '';
+}
+
+/* ==================================================================
+   RENDER — GROUPS
+   ================================================================== */
+function renderGroups() {
+  const wrap = $('groupList');
+  const counts = {};
+  state.birthdays.forEach(b => {
+    const g = b.group || 'General';
+    counts[g] = (counts[g] || 0) + 1;
+  });
+  const all = [...new Set([...state.groups, ...Object.keys(counts)])];
+  if (!all.length) {
+    wrap.innerHTML = `<div style="font-size:13px;color:var(--muted);text-align:center;padding:14px">${t('noGroups')}</div>`;
+    return;
+  }
+  wrap.innerHTML = all.map(g => `
+    <div class="grow">
+      <span class="dot" style="--c:${groupColor(g)};width:12px;height:12px"></span>
+      <span class="gname">${esc(g)}</span>
+      <span class="gcount">${counts[g] || 0}</span>
+      ${state.groups.includes(g) && !DEFAULT_GROUPS.includes(g)
+        ? `<button class="mini" data-delgroup="${esc(g)}" title="Delete group">🗑️</button>` : ''}
+    </div>
+  `).join('');
+}
+
+/* ==================================================================
+   RENDER — SETTINGS
+   ================================================================== */
+function renderSettings() {
+  const st = $('notifStatus');
+  if (!('Notification' in window)) st.textContent = t('notifUnsupported');
+  else if (Notification.permission === 'granted') st.textContent = t('notifGranted');
+  else if (Notification.permission === 'denied') st.textContent = t('notifDenied');
+  else st.textContent = t('notifNotEnabled');
+  $('swSound').classList.toggle('on', state.sound !== false);
+  $('swTheme').classList.toggle('on', state.theme === 'dark');
+  $('btnLang2').textContent = currentLang === 'en' ? 'EN / हिंदी' : 'हिंदी / EN';
+}
+
+function renderAll() {
+  renderHome();
+  renderCalendar();
+  renderGroups();
+  renderSettings();
+  updateHeaderSub();
+}
+
+function updateHeaderSub() {
+  const items = getSorted();
+  const sub = $('hdSub');
+  if (!items.length) { sub.textContent = t('appSub'); return; }
+  const x = items[0];
+  if (x.days === 0) sub.textContent = tFmt('greetingToday', { name: x.b.name });
+  else if (x.days === 1) sub.textContent = tFmt('greetingTomorrow', { name: x.b.name });
+  else sub.textContent = tFmt('greetingIn', { name: x.b.name, n: x.days });
+}
+
+/* ==================================================================
+   SHEET — ADD / EDIT
+   ================================================================== */
+function fillSelects() {
+  const fDay = $('fDay'), fMonth = $('fMonth'), fGroup = $('fGroup');
+  fDay.innerHTML = Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
+  fMonth.innerHTML = MONTHS.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
+  fGroup.innerHTML = state.groups.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
+}
+
+function openSheet(b = null) {
+  ui.editingId = b ? b.id : null;
+  fillSelects();
+  $('sheetTitle').textContent = b ? t('editTitle') : t('addTitle');
+
+  if (b) {
+    $('fName').value = b.name || '';
+    $('fDay').value = b.day;
+    $('fMonth').value = b.month;
+    $('fYear').value = b.year || '';
+    $('fGroup').value = b.group || state.groups[0] || 'General';
+    $('fNote').value = b.note || '';
+    $('fTime').value = b.time || '09:00';
+    $('fRepeat').value = b.repeat || 'yearly';
+    $('fYears').value = b.years || 3;
+    const rem = Array.isArray(b.reminders) && b.reminders.length ? b.reminders : [b.before || 0];
+    formReminders = new Set(rem);
+  } else {
+    $('fName').value = '';
+    const now = new Date();
+    $('fDay').value = now.getDate();
+    $('fMonth').value = now.getMonth() + 1;
+    $('fYear').value = '';
+    $('fGroup').value = state.groups[0] || 'General';
+    $('fNote').value = '';
+    $('fTime').value = '09:00';
+    $('fRepeat').value = 'yearly';
+    $('fYears').value = 3;
+    formReminders = new Set([0]);
+  }
+  $('fCustomDays').value = '';
+  toggleYearsWrap();
+  renderRemindChips();
+  $('sheet').classList.add('open');
+  setTimeout(() => $('fName').focus(), 250);
+}
+
+function renderRemindChips() {
+  const wrap = $('fRemindChips');
+  const fixed = [
+    { d: 0, label: t('sameDay') },
+    { d: 1, label: t('oneDay') },
+    { d: 2, label: t('twoDays') },
+    { d: 7, label: t('oneWeek') }
+  ];
+  const custom = [...formReminders].filter(d => ![0,1,2,7].includes(d)).sort((a,b)=>a-b);
+  let html = fixed.map(f =>
+    `<button type="button" class="r-chip ${formReminders.has(f.d)?'active':''}" data-days="${f.d}">${f.label}</button>`
+  ).join('');
+  custom.forEach(d => {
+    html += `<button type="button" class="r-chip active" data-days="${d}">${d} ${t('daysBeforeSuffix')} ✕</button>`;
+  });
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.r-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const d = +chip.dataset.days;
+      if (formReminders.has(d)) formReminders.delete(d);
+      else formReminders.add(d);
+      renderRemindChips();
+    });
+  });
+}
+
+function toggleYearsWrap() {
+  $('fYearsWrap').style.display = $('fRepeat').value === 'custom' ? 'flex' : 'none';
+}
+
+function saveForm() {
+  const name = $('fName').value.trim();
+  if (!name) { toast(t('nameRequired')); $('fName').focus(); return; }
+  const day = parseInt($('fDay').value, 10);
+  const month = parseInt($('fMonth').value, 10);
+  const yearRaw = $('fYear').value.trim();
+  const year = yearRaw ? parseInt(yearRaw, 10) : null;
+  if (year && (year < 1900 || year > new Date().getFullYear())) {
+    toast(t('invalidYear')); return;
+  }
+
+  let group = $('fGroup').value || 'General';
+  if (!state.groups.includes(group)) state.groups.push(group);
+
+  const reminders = [...formReminders].sort((a, b) => a - b);
+  const data = {
+    name, day, month, year, group,
+    note: $('fNote').value.trim(),
+    time: $('fTime').value || '09:00',
+    reminders: reminders.length ? reminders : [0],
+    repeat: $('fRepeat').value,
+    years: Math.max(1, parseInt($('fYears').value, 10) || 1)
+  };
+
+  if (ui.editingId) {
+    const idx = state.birthdays.findIndex(x => x.id === ui.editingId);
+    if (idx > -1) state.birthdays[idx] = { ...state.birthdays[idx], ...data };
+    toast(t('saved'));
+  } else {
+    state.birthdays.push({
+      id: uid(), ...data,
+      createdAt: Date.now(),
+      startYear: nextOccurrence(data).getFullYear()
+    });
+    toast(t('added'));
+  }
+
+  save();
+  $('sheet').classList.remove('open');
+  renderAll();
+  askNotificationPermission();
+}
+
+/* ==================================================================
+   NOTIFICATIONS + ALARM
+   ================================================================== */
+async function askNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    try { await Notification.requestPermission(); } catch (e) {}
+    renderSettings();
+  }
+}
+
+let audioCtx = null;
+function playAlarm() {
+  if (state.sound === false) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t0 = audioCtx.currentTime;
+    const notes = [880, 1108, 1318, 1108, 1318, 1568];
+    notes.forEach((f, i) => {
+      const t = t0 + i * 0.22;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.22, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t + 0.22);
+    });
+  } catch (e) {}
+}
+
+function reminderDateFor(b, occ, offset) {
+  const d = new Date(occ);
+  d.setDate(d.getDate() - offset);
+  const [hh, mm] = (b.time || '09:00').split(':').map(Number);
+  d.setHours(hh || 0, mm || 0, 0, 0);
+  return d;
+}
+
+function isRepeatActive(b, occ) {
+  const mode = b.repeat || 'yearly';
+  if (mode === 'yearly') return true;
+  const startY = b.startYear || new Date(b.createdAt || Date.now()).getFullYear();
+  if (mode === 'once') return occ.getFullYear() === startY;
+  if (mode === 'custom') {
+    const n = b.years || 1;
+    return occ.getFullYear() >= startY && occ.getFullYear() < startY + n;
+  }
+  return true;
+}
+
+/* alarm queue */
+let alarmQueue = [];
+let alarmShowing = false;
+
+function queueAlarm(b, occ) {
+  alarmQueue.push({ b, occ });
+  if (!alarmShowing) showNextAlarm();
+}
+function showNextAlarm() {
+  if (!alarmQueue.length) { alarmShowing = false; return; }
+  alarmShowing = true;
+  const item = alarmQueue.shift();
+  displayAlarm(item.b, item.occ);
+}
+
+function displayAlarm(b, occ) {
+  const d = daysUntil(occ);
+  const title = tFmt('fireTitle', { name: b.name });
+  let body;
+  if (d === 0) body = t('fireToday');
+  else if (d === 1) body = tFmt('fireTomorrow', { date: fmtDateNoYear(occ) });
+  else body = tFmt('fireInDays', { n: d, date: fmtDateNoYear(occ) });
+
+  const notifBody = b.note ? body + '\n📝 ' + b.note : body;
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try { new Notification(title, { body: notifBody, tag: b.id + '_' + occ.getFullYear() }); } catch (e) {}
+  }
+
+  $('alarmTitle').textContent = title;
+  const ageLine = b.year
+    ? `<br>${currentLang === 'hi' ? `${occ.getFullYear() - b.year} ${t('ageYears')} के होंगे` : `Turning ${occ.getFullYear() - b.year}`}`
+    : '';
+  const whenLine = d === 0 ? t('onTheDay') : tFmt('inNDays', { n: d });
+  $('alarmBody').innerHTML = `${esc(body).replace(/\n/g, '<br>')}<br><br>
+    <b>${whenLine}</b> · ${b.day} ${MONTHS[b.month - 1]}${b.year ? ' ' + b.year : ''}${ageLine}`;
+  $('alarm').classList.add('open');
+  playAlarm();
+}
+
+const REMINDER_WINDOW_MS = 24 * 3600 * 1000;
+
+function checkReminders() {
+  const now = new Date();
+  let changed = false;
+
+  state.birthdays.forEach(b => {
+    const occ = nextOccurrence(b);
+    if (!isRepeatActive(b, occ)) return;
+    const offsets = (Array.isArray(b.reminders) && b.reminders.length) ? b.reminders : [b.before || 0];
+
+    offsets.forEach(off => {
+      const rd = reminderDateFor(b, occ, off);
+      const key = b.id + '_' + occ.getFullYear() + '_' + off;
+      if (state.fired[key]) return;
+      const diff = now - rd;
+      if (diff < 0) return; // future
+      if (diff >= REMINDER_WINDOW_MS) {
+        state.fired[key] = true; changed = true; return; // stale
+      }
+      state.fired[key] = true; changed = true;
+      queueAlarm(b, occ);
+    });
+  });
+
+  if (changed) save();
+}
+
+/* ==================================================================
+   CONTACT IMPORT
+   ================================================================== */
+let pickCandidates = [];
+
+function parseBdayString(s) {
+  if (!s) return null;
+  s = String(s).replace(/\s/g, '');
+  let m;
+  if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/))) return { y: +m[1], m: +m[2], d: +m[3] };
+  if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return { y: +m[1], m: +m[2], d: +m[3] };
+  if ((m = s.match(/^--(\d{2})-(\d{2})$/))) return { y: null, m: +m[1], d: +m[2] };
+  if ((m = s.match(/^(\d{2})-(\d{2})$/))) return { y: null, m: +m[1], d: +m[2] };
+  if ((m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/))) return { y: +m[3], m: +m[2], d: +m[1] };
+  return null;
+}
+
+async function importFromContacts() {
+  if (!('contacts' in navigator && 'ContactsManager' in window)) {
+    toast(t('contactsNotSupported')); return;
+  }
+  try {
+    const contacts = await navigator.contacts.select(['name', 'birthday'], { multiple: true });
+    pickCandidates = [];
+    contacts.forEach(c => {
+      const nm = (c.name && c.name[0]) || '';
+      const bd = (c.birthday && c.birthday[0]) || '';
+      const p = parseBdayString(bd);
+      if (nm && p) pickCandidates.push({ name: nm, ...p, checked: true });
+    });
+    if (!pickCandidates.length) { toast(t('noContactBdays')); return; }
+    openPicker();
+  } catch (e) { toast(t('permissionFailed')); }
+}
+
+function openPicker() {
+  const list = $('pickList');
+  list.innerHTML = pickCandidates.map((c, i) => `
+    <label class="pick-row">
+      <input type="checkbox" data-i="${i}" ${c.checked ? 'checked' : ''}>
+      <span class="pname">${esc(c.name)}</span>
+      <span class="pdate">${c.d} ${MONTHS_SHORT[c.m - 1]}${c.y ? ' ' + c.y : ''}</span>
+    </label>
+  `).join('');
+  updatePickCount();
+  $('pickSheet').classList.add('open');
+}
+function updatePickCount() {
+  const n = pickCandidates.filter(c => c.checked).length;
+  $('pickCount').textContent = n;
+}
+
+function doPickImport() {
+  const chosen = pickCandidates.filter(c => c.checked);
+  if (!chosen.length) { toast(t('selectOne')); return; }
+  let added = 0, skipped = 0;
+  const defaultGroup = state.groups.includes('Friends') ? 'Friends' : (state.groups[0] || 'General');
+  chosen.forEach(c => {
+    const dup = state.birthdays.some(b =>
+      b.name.toLowerCase() === c.name.toLowerCase() && b.day === c.d && b.month === c.m
+    );
+    if (dup) { skipped++; return; }
+    const data = {
+      name: c.name, day: c.d, month: c.m, year: c.y || null,
+      group: defaultGroup, note: '', time: '09:00',
+      reminders: [0], repeat: 'yearly', years: 1
+    };
+    state.birthdays.push({
+      id: uid(), ...data, createdAt: Date.now(),
+      startYear: nextOccurrence(data).getFullYear()
+    });
+    added++;
+  });
+  save();
+  $('pickSheet').classList.remove('open');
+  renderAll();
+  toast(`✅ ${added}${skipped ? ` · ${skipped} skipped` : ''}`);
+}
+
+function handleVcf(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result;
+    const cards = text.split(/BEGIN:VCARD/i).slice(1);
+    pickCandidates = [];
+    cards.forEach(card => {
+      let name = '', bday = '';
+      card.split(/\r?\n/).forEach(line => {
+        if (/^FN[;:]/i.test(line) && !name) name = line.split(':').slice(1).join(':').trim();
+        if (/^N[;:]/i.test(line) && !name) {
+          const parts = line.split(':').slice(1).join(':').split(';');
+          name = [parts[1], parts[0]].filter(Boolean).join(' ').trim();
+        }
+        if (/^BDAY[;:]/i.test(line) && !bday) bday = line.split(':').slice(1).join(':').trim();
+      });
+      const p = parseBdayString(bday);
+      if (name && p) pickCandidates.push({ name, ...p, checked: true });
+    });
+    if (!pickCandidates.length) { toast(t('noBdayInFile')); return; }
+    openPicker();
+  };
+  reader.readAsText(file);
+}
+
+/* ==================================================================
+   IMPORT / EXPORT
+   ================================================================== */
+function exportData() {
+  const data = {
+    app: 'Birthday Reminder', version: 1,
+    exportedAt: new Date().toISOString(),
+    birthdays: state.birthdays, groups: state.groups, lang: state.lang
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `birthday-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast(t('exported'));
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const p = JSON.parse(e.target.result);
+      const incoming = Array.isArray(p) ? p : (p.birthdays || []);
+      if (!Array.isArray(incoming)) throw new Error('bad');
+      let added = 0, skipped = 0;
+      incoming.forEach(b => {
+        if (!b.name || !b.day || !b.month) { skipped++; return; }
+        const dup = state.birthdays.some(x =>
+          x.name.toLowerCase() === String(b.name).toLowerCase() && x.day === b.day && x.month === b.month
+        );
+        if (dup) { skipped++; return; }
+        const reminders = Array.isArray(b.reminders) ? b.reminders : [b.before || 0];
+        const data = {
+          name: String(b.name), day: +b.day, month: +b.month,
+          year: b.year ? +b.year : null,
+          group: b.group || 'General', note: b.note || '',
+          time: b.time || '09:00', reminders,
+          repeat: b.repeat || 'yearly', years: b.years || 1
+        };
+        state.birthdays.push({
+          id: uid(), ...data, createdAt: Date.now(),
+          startYear: nextOccurrence(data).getFullYear()
+        });
+        if (!state.groups.includes(data.group)) state.groups.push(data.group);
+        added++;
+      });
+      (p.groups || []).forEach(g => { if (!state.groups.includes(g)) state.groups.push(g); });
+      save(); renderAll();
+      toast(`✅ ${added}${skipped ? ` · ${skipped} skipped` : ''}`);
+    } catch (err) { toast(t('invalidFile')); }
+  };
+  reader.readAsText(file);
+}
+
+/* ==================================================================
+   DEMO
+   ================================================================== */
+function loadDemo() {
+  const today = new Date();
+  const mk = (name, dOff, group, year, note) => {
+    const d = new Date(today); d.setDate(d.getDate() + dOff);
+    const data = {
+      name, day: d.getDate(), month: d.getMonth() + 1, year: year || null,
+      group, note: note || '', time: '09:00',
+      reminders: [0, 1], repeat: 'yearly', years: 1
+    };
+    return { id: uid(), ...data, createdAt: Date.now(), startYear: nextOccurrence(data).getFullYear() };
+  };
+  state.birthdays.push(
+    mk('Aarav Sharma', 0, 'Friends', 1998, 'Chocolate cake 🍫'),
+    mk('Priya Verma', 3, 'Family', 1995, 'Gift: Perfume'),
+    mk('Rohit Kumar', 8, 'College', 2000, 'Hostel roommate'),
+    mk('Neha Gupta', 15, 'Colleagues', 1997, ''),
+    mk('Mummy', 22, 'Family', 1972, 'Saree gift karni hai'),
+    mk('Kabir Singh', 34, 'Friends', 1999, 'Gym partner')
+  );
+  save(); renderAll();
+  toast(t('demoLoaded'));
+}
+
+/* ==================================================================
+   EVENTS
+   ================================================================== */
+function initEvents() {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      $('view-' + t.dataset.view).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  $('fabAdd').addEventListener('click', () => openSheet(null));
+
+  document.querySelectorAll('[data-close]').forEach(el => {
+    el.addEventListener('click', () => el.closest('.sheet').classList.remove('open'));
+  });
+
+  $('btnSave').addEventListener('click', saveForm);
+  $('fRepeat').addEventListener('change', toggleYearsWrap);
+
+  $('btnQuickGroup').addEventListener('click', () => {
+    const g = prompt(t('enterGroupName'));
+    if (g && g.trim()) {
+      const name = g.trim();
+      if (!state.groups.includes(name)) state.groups.push(name);
+      save(); fillSelects(); $('fGroup').value = name; renderGroups();
+    }
+  });
+
+  // reminder custom add
+  $('btnAddCustomDays').addEventListener('click', () => {
+    const v = parseInt($('fCustomDays').value, 10);
+    if (!v || v < 1 || v > 365) { toast(t('invalidDays')); return; }
+    formReminders.add(v);
+    $('fCustomDays').value = '';
+    renderRemindChips();
+  });
+  $('fCustomDays').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); $('btnAddCustomDays').click(); }
+  });
+
+  $('birthdayList').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    if (btn.dataset.act === 'edit') {
+      const b = state.birthdays.find(x => x.id === btn.dataset.id);
+      if (b) openSheet(b);
+    } else if (btn.dataset.act === 'del') {
+      const b = state.birthdays.find(x => x.id === btn.dataset.id);
+      if (!b) return;
+      if (!confirm(`${t('deleteConfirm')} (${b.name})`)) return;
+      state.birthdays = state.birthdays.filter(x => x.id !== b.id);
+      save(); renderAll();
+      toast(t('deleted'));
+    }
+  });
+
+  $('filterChips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    ui.filter = chip.dataset.filter;
+    renderHome();
+  });
+
+  $('searchInput').addEventListener('input', (e) => {
+    ui.search = e.target.value;
+    renderHome();
+  });
+
+  $('calPrev').addEventListener('click', () => {
+    ui.calM--; if (ui.calM < 0) { ui.calM = 11; ui.calY--; }
+    renderCalendar();
+  });
+  $('calNext').addEventListener('click', () => {
+    ui.calM++; if (ui.calM > 11) { ui.calM = 0; ui.calY++; }
+    renderCalendar();
+  });
+  $('calToday').addEventListener('click', () => {
+    const n = new Date(); ui.calY = n.getFullYear(); ui.calM = n.getMonth(); renderCalendar();
+  });
+
+  $('btnAddGroup').addEventListener('click', () => {
+    const inp = $('newGroupInput');
+    const name = inp.value.trim();
+    if (!name) { toast(t('enterGroupName')); return; }
+    if (state.groups.includes(name)) { toast(t('groupExists')); return; }
+    state.groups.push(name);
+    inp.value = '';
+    save(); renderGroups(); fillSelects();
+    toast(t('groupAdded'));
+  });
+  $('newGroupInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnAddGroup').click(); });
+
+  $('groupList').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-delgroup]');
+    if (!btn) return;
+    const g = btn.dataset.delgroup;
+    if (!confirm(`${t('groupDeleteConfirm')} (${g})`)) return;
+    state.groups = state.groups.filter(x => x !== g);
+    state.birthdays.forEach(b => { if (b.group === g) b.group = 'General'; });
+    if (!state.groups.includes('General')) state.groups.push('General');
+    save(); renderAll();
+  });
+
+  // theme
+  $('btnTheme').addEventListener('click', () => {
+    state.theme = state.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(); save(); renderSettings();
+  });
+  $('swTheme').addEventListener('click', () => $('btnTheme').click());
+
+  // language
+  function toggleLang() {
+    state.lang = state.lang === 'en' ? 'hi' : 'en';
+    save();
+    applyLang();
+  }
+  $('btnLang').addEventListener('click', toggleLang);
+  $('btnLang2').addEventListener('click', toggleLang);
+
+  // notifications
+  $('btnBell').addEventListener('click', async () => {
+    await askNotificationPermission();
+    toast(Notification.permission === 'granted' ? t('notifOn') : t('notifDeniedToast'));
+    renderSettings();
+  });
+  $('btnEnableNotif').addEventListener('click', () => $('btnBell').click());
+
+  $('btnTestNotif').addEventListener('click', () => {
+    const demo = state.birthdays[0] || {
+      name: 'Test Friend', day: new Date().getDate(), month: new Date().getMonth() + 1,
+      year: 1998, note: 'Test reminder', time: '09:00', reminders: [0]
+    };
+    displayAlarm(demo, nextOccurrence(demo));
+    toast(t('testPlayed'));
+  });
+
+  $('swSound').addEventListener('click', () => {
+    state.sound = state.sound === false ? true : false;
+    $('swSound').classList.toggle('on', state.sound);
+    save();
+    if (state.sound) { playAlarm(); toast(t('soundOn')); }
+    else toast(t('soundOff'));
+  });
+
+  $('alarmClose').addEventListener('click', () => {
+    $('alarm').classList.remove('open');
+    setTimeout(showNextAlarm, 350);
+  });
+
+  // contacts
+  $('btnContacts').addEventListener('click', importFromContacts);
+  $('btnVcf').addEventListener('click', () => $('vcfInput').click());
+  $('vcfInput').addEventListener('change', (e) => {
+    if (e.target.files[0]) handleVcf(e.target.files[0]);
+    e.target.value = '';
+  });
+
+  // picker
+  $('pickList').addEventListener('change', (e) => {
+    const cb = e.target.closest('input[type=checkbox]');
+    if (!cb) return;
+    pickCandidates[+cb.dataset.i].checked = cb.checked;
+    updatePickCount();
+  });
+  $('pickAll').addEventListener('click', () => {
+    pickCandidates.forEach(c => c.checked = true);
+    document.querySelectorAll('#pickList input[type=checkbox]').forEach(cb => cb.checked = true);
+    updatePickCount();
+  });
+  $('pickNone').addEventListener('click', () => {
+    pickCandidates.forEach(c => c.checked = false);
+    document.querySelectorAll('#pickList input[type=checkbox]').forEach(cb => cb.checked = false);
+    updatePickCount();
+  });
+  $('pickImport').addEventListener('click', doPickImport);
+
+  // import/export
+  $('btnExport').addEventListener('click', exportData);
+  $('btnImport').addEventListener('click', () => $('jsonInput').click());
+  $('jsonInput').addEventListener('change', (e) => {
+    if (e.target.files[0]) importData(e.target.files[0]);
+    e.target.value = '';
+  });
+
+  // demo/clear
+  $('btnDemo').addEventListener('click', loadDemo);
+  $('btnClear').addEventListener('click', () => {
+    if (!confirm('Saara data delete ho jayega. Pakka? / All data will be deleted. Sure?')) return;
+    state.birthdays = []; state.fired = {};
+    save(); renderAll();
+    toast(t('dataCleared'));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.sheet.open').forEach(s => s.classList.remove('open'));
+      $('alarm').classList.remove('open');
+    }
+  });
+}
+
+/* ==================================================================
+   BOOT
+   ================================================================== */
+function boot() {
+  load();
+  currentLang = state.lang || 'en';
+  applyTheme();
+  fillSelects();
+  initEvents();
+  applyLang(); // also calls renderAll
+
+  setTimeout(checkReminders, 1200);
+  setInterval(checkReminders, 30000);
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) { renderAll(); checkReminders(); }
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
